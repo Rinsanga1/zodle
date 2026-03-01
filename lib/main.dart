@@ -27,13 +27,13 @@ class _MainAppState extends State<MainApp> {
       themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF0D0D0D),
+        scaffoldBackgroundColor: const Color(0xFF08090a),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF0D0D0D),
+          backgroundColor: Color(0xFF08090a),
           elevation: 0,
         ),
-        cardTheme: const CardThemeData(color: Color(0xFF1A1A1A)),
-        dialogTheme: const DialogThemeData(backgroundColor: Color(0xFF1A1A1A)),
+        cardTheme: const CardThemeData(color: Color(0xFF0f1011)),
+        dialogTheme: const DialogThemeData(backgroundColor: Color(0xFF0f1011)),
       ),
       home: HomeScreen(
         isDarkMode: _isDarkMode,
@@ -532,7 +532,7 @@ class _EndlessModePageState extends State<EndlessModePage> {
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white : null,
+            color: isDark ? const Color(0xFFf7f8f8) : null,
           ),
         ),
         Text(
@@ -568,7 +568,7 @@ class HelpDialog extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : null,
+                    color: isDark ? const Color(0xFFf7f8f8) : null,
                   ),
                 ),
               ),
@@ -585,7 +585,7 @@ class HelpDialog extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: isDark ? Colors.white : null,
+                  color: isDark ? const Color(0xFFf7f8f8) : null,
                 ),
               ),
               const SizedBox(height: 12),
@@ -703,7 +703,7 @@ class HelpDialog extends StatelessWidget {
             fontWeight: FontWeight.bold,
             color: !hasLetter
                 ? Colors.transparent
-                : (isDark ? Colors.white : Colors.black),
+                : (isDark ? const Color(0xFFf7f8f8) : Colors.black),
           ),
         ),
       ),
@@ -761,7 +761,7 @@ class Tile extends StatelessWidget {
             fontWeight: FontWeight.bold,
             color: !hasLetter
                 ? Colors.transparent
-                : (isDark ? Colors.white : Colors.black),
+                : (isDark ? const Color(0xFFf7f8f8) : Colors.black),
           ),
         ),
       ),
