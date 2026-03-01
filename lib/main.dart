@@ -28,12 +28,21 @@ class HomeScreen extends StatelessWidget {
             children: [
               Text("Zodle"),
               Text(
-                "Mizo Daily Word Guessing Puzzle",
+                "Daily Mizo Thu Puzzle Guessing Game",
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
               ),
             ],
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => showDialog(
+              context: context,
+              builder: (context) => const HelpDialog(),
+            ),
+          ),
+        ],
       ),
       body: Center(
         child: Padding(
@@ -263,6 +272,12 @@ class _EndlessModePageState extends State<EndlessModePage> {
     });
   }
 
+  void _retryGame() {
+    setState(() {
+      _guesses = List.generate(_maxGuesses, (_) => []);
+    });
+  }
+
   void _onSubmitGuess(String guess) {
     if (_hiddenWord == null) return;
 
@@ -390,14 +405,14 @@ class _EndlessModePageState extends State<EndlessModePage> {
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         children: [
-                          Text(
+                          const Text(
                             'Game over!',
-                            style: const TextStyle(fontSize: 24),
+                            style: TextStyle(fontSize: 24),
                           ),
                           const SizedBox(height: 16),
                           ElevatedButton(
-                            onPressed: _nextGame,
-                            child: const Text('Next Word'),
+                            onPressed: _retryGame,
+                            child: const Text('Retry'),
                           ),
                         ],
                       ),
@@ -450,6 +465,120 @@ class _EndlessModePageState extends State<EndlessModePage> {
           style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
         ),
       ],
+    );
+  }
+}
+
+class HelpDialog extends StatelessWidget {
+  const HelpDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Center(
+                child: Text(
+                  'How To Play',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Guess the Zodle in 6 tries.\n'
+                'Each guess must be a valid 5-letter word.\n'
+                'The color of the tiles will change to show how close your guess was to the word.',
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Examples',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _exampleTile('A', HitType.none),
+                  _exampleTile('N', HitType.hit),
+                  _exampleTile('I', HitType.none),
+                  _exampleTile('M', HitType.none),
+                  _exampleTile('O', HitType.none),
+                ],
+              ),
+              const Text('N is in the word and in the correct spot.'),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _exampleTile('A', HitType.none),
+                  _exampleTile('N', HitType.none),
+                  _exampleTile('I', HitType.partial),
+                  _exampleTile('M', HitType.none),
+                  _exampleTile('O', HitType.none),
+                ],
+              ),
+              const Text('I is in the word but in the wrong spot.'),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _exampleTile('A', HitType.none),
+                  _exampleTile('N', HitType.none),
+                  _exampleTile('I', HitType.none),
+                  _exampleTile('M', HitType.miss),
+                  _exampleTile('O', HitType.none),
+                ],
+              ),
+              const Text('M is not in the word in any spot.'),
+              const SizedBox(height: 16),
+              Center(
+                child: SizedBox(
+                  width: 150,
+                  child: Container(height: 2, color: Colors.grey.shade400),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text('A new puzzle is released daily at midnight.'),
+              const SizedBox(height: 24),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Got it!'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _exampleTile(String letter, HitType hitType) {
+    return Container(
+      width: 40,
+      height: 40,
+      margin: const EdgeInsets.symmetric(horizontal: 2),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade400),
+        color: switch (hitType) {
+          HitType.hit => Colors.green,
+          HitType.partial => Colors.yellow,
+          HitType.miss => Colors.grey,
+          HitType.none => Colors.white,
+          HitType.removed => Colors.white,
+        },
+      ),
+      child: Center(
+        child: Text(
+          letter.toUpperCase(),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+      ),
     );
   }
 }

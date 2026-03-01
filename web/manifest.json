@@ -1,6 +1,6 @@
 {
-    "name": "birdle",
-    "short_name": "birdle",
+    "name": "zodle",
+    "short_name": "zodle",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
