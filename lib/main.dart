@@ -703,9 +703,7 @@ class HelpDialog extends StatelessWidget {
             fontWeight: FontWeight.bold,
             color: !hasLetter
                 ? Colors.transparent
-                : (hitType == HitType.hit || hitType == HitType.partial
-                      ? (hitType == HitType.hit ? Colors.white : Colors.black)
-                      : (isDark ? Colors.white : Colors.black)),
+                : (isDark ? Colors.white : Colors.black),
           ),
         ),
       ),
@@ -763,9 +761,7 @@ class Tile extends StatelessWidget {
             fontWeight: FontWeight.bold,
             color: !hasLetter
                 ? Colors.transparent
-                : (hitType == HitType.hit || hitType == HitType.partial
-                      ? (hitType == HitType.hit ? Colors.white : Colors.black)
-                      : (isDark ? Colors.white : Colors.black)),
+                : (isDark ? Colors.white : Colors.black),
           ),
         ),
       ),
