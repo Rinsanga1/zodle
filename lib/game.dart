@@ -404,7 +404,7 @@ const List<String> validWords = [
   'thalo',
 ];
 
-const List<String> wordOfTheDay = validWords;
+const List<String> targetWords = validWords;
 
 const defaultNumGuesses = 5;
 
@@ -415,7 +415,7 @@ typedef Letter = ({String char, HitType type});
 String getTodayWord() {
   final now = DateTime.now();
   final dayOfYear = now.difference(DateTime(now.year, 1, 1)).inDays;
-  return wordOfTheDay[dayOfYear % wordOfTheDay.length];
+  return targetWords[dayOfYear % targetWords.length];
 }
 
 bool isValidWord(String word) {
@@ -528,7 +528,7 @@ class Word with IterableMixin<Letter> {
 
   factory Word.random() {
     var rand = Random();
-    var nextWord = validWords[rand.nextInt(validWords.length)];
+    var nextWord = targetWords[rand.nextInt(targetWords.length)];
     return Word.fromString(nextWord);
   }
 
