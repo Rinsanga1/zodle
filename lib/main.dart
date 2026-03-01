@@ -21,7 +21,19 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Align(alignment: Alignment.center, child: Text("Zodle")),
+        title: const Align(
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("Zodle"),
+              Text(
+                "Mizo Daily Word Guessing Puzzle",
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+              ),
+            ],
+          ),
+        ),
       ),
       body: Center(
         child: Padding(
@@ -230,7 +242,6 @@ class _EndlessModePageState extends State<EndlessModePage> {
   bool _isLoading = true;
   final int _maxGuesses = 6;
 
-  int _skipsRemaining = 10;
   int _gamesPlayed = 0;
   int _wins = 0;
   int _currentStreak = 0;
@@ -288,16 +299,8 @@ class _EndlessModePageState extends State<EndlessModePage> {
   }
 
   void _onSkip() {
-    setState(() {
-      if (_skipsRemaining > 0) {
-        _skipsRemaining--;
-        _guesses = List.generate(_maxGuesses, (_) => []);
-        _isLoading = true;
-      } else {
-        _currentStreak = 0;
-        _skipsRemaining = 10;
-      }
-    });
+    _guesses = List.generate(_maxGuesses, (_) => []);
+    _isLoading = true;
     _initGame();
   }
 
@@ -406,11 +409,7 @@ class _EndlessModePageState extends State<EndlessModePage> {
                         const SizedBox(height: 8),
                         ElevatedButton(
                           onPressed: _onSkip,
-                          child: Text(
-                            _skipsRemaining > 0
-                                ? 'Skip ($_skipsRemaining left)'
-                                : 'Restart',
-                          ),
+                          child: const Text('Skip'),
                         ),
                       ],
                     ),
