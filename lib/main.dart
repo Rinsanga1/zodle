@@ -5,34 +5,68 @@ void main() {
   runApp(const MainApp());
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
   @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  bool _isDarkMode = false;
+
+  void _toggleDarkMode() {
+    setState(() {
+      _isDarkMode = !_isDarkMode;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: const HomeScreen());
+    return MaterialApp(
+      themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: const Color(0xFF0D0D0D),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF0D0D0D),
+          elevation: 0,
+        ),
+        cardTheme: const CardThemeData(color: Color(0xFF1A1A1A)),
+        dialogTheme: const DialogThemeData(backgroundColor: Color(0xFF1A1A1A)),
+      ),
+      home: HomeScreen(
+        isDarkMode: _isDarkMode,
+        onToggleDarkMode: _toggleDarkMode,
+      ),
+    );
   }
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final bool isDarkMode;
+  final VoidCallback onToggleDarkMode;
+
+  const HomeScreen({
+    super.key,
+    required this.isDarkMode,
+    required this.onToggleDarkMode,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Align(
-          alignment: Alignment.center,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text("Zodle"),
-              Text(
-                "Daily Mizo Thu Puzzle Guessing Game",
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
-              ),
-            ],
-          ),
+        centerTitle: true,
+        title: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text("Zodle"),
+            Text(
+              "Daily Mizo Thu Puzzle Guessing Game",
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+            ),
+          ],
         ),
         actions: [
           IconButton(
@@ -41,6 +75,10 @@ class HomeScreen extends StatelessWidget {
               context: context,
               builder: (context) => const HelpDialog(),
             ),
+          ),
+          IconButton(
+            icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
+            onPressed: onToggleDarkMode,
           ),
         ],
       ),
@@ -62,7 +100,10 @@ class HomeScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const WordOfTheDayPage(),
+                        builder: (context) => WordOfTheDayPage(
+                          isDarkMode: isDarkMode,
+                          onToggleDarkMode: onToggleDarkMode,
+                        ),
                       ),
                     );
                   },
@@ -83,7 +124,10 @@ class HomeScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const EndlessModePage(),
+                        builder: (context) => EndlessModePage(
+                          isDarkMode: isDarkMode,
+                          onToggleDarkMode: onToggleDarkMode,
+                        ),
                       ),
                     );
                   },
@@ -105,7 +149,14 @@ class HomeScreen extends StatelessWidget {
 }
 
 class WordOfTheDayPage extends StatefulWidget {
-  const WordOfTheDayPage({super.key});
+  final bool isDarkMode;
+  final VoidCallback onToggleDarkMode;
+
+  const WordOfTheDayPage({
+    super.key,
+    required this.isDarkMode,
+    required this.onToggleDarkMode,
+  });
 
   @override
   State<WordOfTheDayPage> createState() => _WordOfTheDayPageState();
@@ -179,10 +230,14 @@ class _WordOfTheDayPageState extends State<WordOfTheDayPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Align(
-          alignment: Alignment.center,
-          child: Text("Word of the Day"),
-        ),
+        centerTitle: true,
+        title: const Text("Word of the Day"),
+        actions: [
+          IconButton(
+            icon: Icon(widget.isDarkMode ? Icons.light_mode : Icons.dark_mode),
+            onPressed: widget.onToggleDarkMode,
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -239,7 +294,14 @@ class _WordOfTheDayPageState extends State<WordOfTheDayPage> {
 }
 
 class EndlessModePage extends StatefulWidget {
-  const EndlessModePage({super.key});
+  final bool isDarkMode;
+  final VoidCallback onToggleDarkMode;
+
+  const EndlessModePage({
+    super.key,
+    required this.isDarkMode,
+    required this.onToggleDarkMode,
+  });
 
   @override
   State<EndlessModePage> createState() => _EndlessModePageState();
@@ -353,10 +415,14 @@ class _EndlessModePageState extends State<EndlessModePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Align(
-          alignment: Alignment.center,
-          child: Text("Endless Mode"),
-        ),
+        centerTitle: true,
+        title: const Text("Endless Mode"),
+        actions: [
+          IconButton(
+            icon: Icon(widget.isDarkMode ? Icons.light_mode : Icons.dark_mode),
+            onPressed: widget.onToggleDarkMode,
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -435,34 +501,42 @@ class _EndlessModePageState extends State<EndlessModePage> {
   }
 
   Widget _buildStatsBar() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.grey.shade200,
+        color: isDark ? const Color(0xFF1A1A1A) : Colors.grey.shade200,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _statItem('Played', '$_gamesPlayed'),
-          _statItem('Wins', '$_wins'),
-          _statItem('Streak', '$_currentStreak'),
-          _statItem('Best', '$_bestStreak'),
+          _statItem('Played', '$_gamesPlayed', isDark),
+          _statItem('Wins', '$_wins', isDark),
+          _statItem('Streak', '$_currentStreak', isDark),
+          _statItem('Best', '$_bestStreak', isDark),
         ],
       ),
     );
   }
 
-  Widget _statItem(String label, String value) {
+  Widget _statItem(String label, String value, bool isDark) {
     return Column(
       children: [
         Text(
           value,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: isDark ? Colors.white : null,
+          ),
         ),
         Text(
           label,
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+          style: TextStyle(
+            fontSize: 12,
+            color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+          ),
         ),
       ],
     );
@@ -474,7 +548,9 @@ class HelpDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Dialog(
+      backgroundColor: isDark ? const Color(0xFF1A1A1A) : null,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -482,68 +558,92 @@ class HelpDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Center(
+              Center(
                 child: Text(
                   'How To Play',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : null,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'Guess the Zodle in 6 tries.\n'
                 'Each guess must be a valid 5-letter word.\n'
                 'The color of the tiles will change to show how close your guess was to the word.',
+                style: TextStyle(color: isDark ? Colors.white : null),
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'Examples',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : null,
+                ),
               ),
               const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _exampleTile('A', HitType.none),
-                  _exampleTile('N', HitType.hit),
-                  _exampleTile('I', HitType.none),
-                  _exampleTile('M', HitType.none),
-                  _exampleTile('O', HitType.none),
+                  _exampleTile('A', HitType.none, isDark),
+                  _exampleTile('N', HitType.hit, isDark),
+                  _exampleTile('I', HitType.none, isDark),
+                  _exampleTile('M', HitType.none, isDark),
+                  _exampleTile('O', HitType.none, isDark),
                 ],
               ),
-              const Text('N is in the word and in the correct spot.'),
+              Text(
+                'N is in the word and in the correct spot.',
+                style: TextStyle(color: isDark ? Colors.white : null),
+              ),
               const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _exampleTile('A', HitType.none),
-                  _exampleTile('N', HitType.none),
-                  _exampleTile('I', HitType.partial),
-                  _exampleTile('M', HitType.none),
-                  _exampleTile('O', HitType.none),
+                  _exampleTile('A', HitType.none, isDark),
+                  _exampleTile('N', HitType.none, isDark),
+                  _exampleTile('I', HitType.partial, isDark),
+                  _exampleTile('M', HitType.none, isDark),
+                  _exampleTile('O', HitType.none, isDark),
                 ],
               ),
-              const Text('I is in the word but in the wrong spot.'),
+              Text(
+                'I is in the word but in the wrong spot.',
+                style: TextStyle(color: isDark ? Colors.white : null),
+              ),
               const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _exampleTile('A', HitType.none),
-                  _exampleTile('N', HitType.none),
-                  _exampleTile('I', HitType.none),
-                  _exampleTile('M', HitType.miss),
-                  _exampleTile('O', HitType.none),
+                  _exampleTile('A', HitType.none, isDark),
+                  _exampleTile('N', HitType.none, isDark),
+                  _exampleTile('I', HitType.none, isDark),
+                  _exampleTile('M', HitType.miss, isDark),
+                  _exampleTile('O', HitType.none, isDark),
                 ],
               ),
-              const Text('M is not in the word in any spot.'),
+              Text(
+                'M is not in the word in any spot.',
+                style: TextStyle(color: isDark ? Colors.white : null),
+              ),
               const SizedBox(height: 16),
               Center(
                 child: SizedBox(
                   width: 150,
-                  child: Container(height: 2, color: Colors.grey.shade400),
+                  child: Container(
+                    height: 2,
+                    color: isDark ? Colors.grey.shade600 : Colors.grey.shade400,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
-              const Text('A new puzzle is released daily at midnight.'),
+              Text(
+                'A new puzzle is released daily at midnight.',
+                style: TextStyle(color: isDark ? Colors.white : null),
+              ),
               const SizedBox(height: 24),
               Center(
                 child: ElevatedButton(
@@ -558,25 +658,34 @@ class HelpDialog extends StatelessWidget {
     );
   }
 
-  Widget _exampleTile(String letter, HitType hitType) {
+  Widget _exampleTile(String letter, HitType hitType, bool isDark) {
     return Container(
       width: 40,
       height: 40,
       margin: const EdgeInsets.symmetric(horizontal: 2),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade400),
+        border: Border.all(
+          color: isDark ? Colors.grey.shade600 : Colors.grey.shade400,
+        ),
         color: switch (hitType) {
-          HitType.hit => Colors.green,
-          HitType.partial => Colors.yellow,
-          HitType.miss => Colors.grey,
-          HitType.none => Colors.white,
-          HitType.removed => Colors.white,
+          HitType.hit => isDark ? Colors.green.shade600 : Colors.green,
+          HitType.partial => isDark ? Colors.amber.shade700 : Colors.yellow,
+          HitType.miss => isDark ? Colors.blueGrey.shade700 : Colors.grey,
+          HitType.none => isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+          HitType.removed =>
+            isDark ? Colors.grey.shade700 : Colors.grey.shade300,
         },
       ),
       child: Center(
         child: Text(
           letter.toUpperCase(),
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: isDark && hitType == HitType.none
+                ? Colors.white
+                : (isDark ? Colors.black : Colors.black),
+          ),
         ),
       ),
     );
@@ -591,25 +700,32 @@ class Tile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 500),
       curve: Curves.bounceIn,
       width: 60,
       height: 60,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(
+          color: isDark ? Colors.grey.shade600 : Colors.grey.shade300,
+        ),
         color: switch (hitType) {
-          HitType.hit => Colors.green,
-          HitType.partial => Colors.yellow,
-          HitType.miss => Colors.grey,
-          HitType.none => Colors.white,
-          HitType.removed => Colors.white,
+          HitType.hit => isDark ? Colors.green.shade600 : Colors.green,
+          HitType.partial => isDark ? Colors.amber.shade700 : Colors.yellow,
+          HitType.miss => isDark ? Colors.blueGrey.shade700 : Colors.grey,
+          HitType.none => isDark ? Colors.grey.shade800 : Colors.white,
+          HitType.removed => isDark ? Colors.grey.shade800 : Colors.white,
         },
       ),
       child: Center(
         child: Text(
           letter.toUpperCase(),
-          style: Theme.of(context).textTheme.titleMedium,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: isDark && hitType == HitType.none ? Colors.white : null,
+          ),
         ),
       ),
     );
